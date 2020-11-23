@@ -2,7 +2,6 @@ DROP DATABASE IF EXISTS lineup_db;
 CREATE DATABASE lineup_db;
 USE lineup_db;
 CREATE TABLE lineups (
-  row_num INT NOT NULL AUTO_INCREMENT,
   lineup_rank INT COLLATE utf8_unicode_ci NOT NULL,
   player1_lineup VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
   player2_lineup VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
@@ -28,17 +27,15 @@ CREATE TABLE lineups (
   points INT COLLATE utf8_unicode_ci NOT NULL,
   pull_time TIMESTAMP DEFAULT NOW(),
   url TEXT COLLATE utf8_unicode_ci DEFAULT NULL,
-  PRIMARY KEY (row_num),
-  FOREIGN KEY (lineup_rank) REFERENCES players(lineup_rank)
+  PRIMARY KEY (lineup_rank),
+  FOREIGN KEY (player1) REFERENCES players(player_name)
 ) ENGINE = InnoDB AUTO_INCREMENT = 0 DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
 
 CREATE TABLE players (
   player_name VARCHAR(255) COLLATE utf8_unicode_ci NOT NULL,
   player_lineups INTEGER ARRAY COLLATE utf8_unicode_ci NOT NULL,
-  player2_lineup VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
   game_date DATE COLLATE utf8_unicode_ci DEFAULT NULL,
   lineup_team VARCHAR(255) COLLATE utf8_unicode_ci DEFAULT NULL,
-  win_or_loss VARCHAR(3) COLLATE utf8_unicode_ci DEFAULT NULL,
   minutes_played DECIMAL COLLATE utf8_unicode_ci NOT NULL,
   possessions_team1 INT COLLATE utf8_unicode_ci NOT NULL,
   possessions_team2 INT COLLATE utf8_unicode_ci NOT NULL,
@@ -85,4 +82,5 @@ CREATE TABLE location_stats (
   FOREIGN KEY (lineup_rank) REFERENCES lineups(lineup_rank)
 ) ENGINE = InnoDB AUTO_INCREMENT = 0 DEFAULT CHARSET = utf8 COLLATE = utf8_unicode_ci;
 
+CREATE TABLE games ();
 

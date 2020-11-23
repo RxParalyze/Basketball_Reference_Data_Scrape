@@ -12,7 +12,7 @@ db = postgres.connect(
     username = "phil",
     password = "password",
     database = "player_db",
-    port = 3000
+    port = 5050
 )
 
 
