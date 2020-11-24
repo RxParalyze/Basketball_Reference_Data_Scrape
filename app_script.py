@@ -40,13 +40,13 @@ for url_year in range(url_year_start, url_year_end + 1):
 
 
 class row:
-    def __init__(self, player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points):
+    def __init__(self, lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points):
         self.panda_dict = pd.DataFrame({
-            "player_rank" : [player_rank],
+            "lineup_rank" : [lineup_rank],
         "player1_lineup" : [player1_lineup],
         "player2_lineup" : [player2_lineup],
         "game_date" : [game_date],
-        "team_player1" : [team_player1],
+        "team_name" : [team_name],
         "home_or_away" : [home_or_away],
         "team_player2" : [team_player2],
         "win_or_loss" : [win_or_loss],
@@ -69,11 +69,11 @@ class row:
 
 
 # Prepare SQL query statement to INSERT a record into the database.
-sql_statement = "INSERT INTO lineups(player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')"
+sql_statement = "INSERT INTO lineups(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')"
 
 # the rollback sql statement
 sql_rollback = "SELECT LAST_INSERT_ID()"
-# .format(player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, 'NOW()', url)
+# .format(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, 'NOW()', url)
 
 # isolate the "th" tags in tbody from rest of table AND from table body headers
 
@@ -113,14 +113,14 @@ for url in url_list:
     # find the "td" tags
     for counter in range(0, len(get_ranks)):
         data = counter * data_row_count
-        player_rank = get_ranks[0]
+        lineup_rank = get_ranks[0]
 
         player_lineup = get_data[data].split("|")
         player1_lineup = player_lineup[0]
         player2_lineup = player_lineup[1]
 
         game_date = get_data[data+1]
-        team_player1 = get_data[data+2]
+        team_name = get_data[data+2]
         home_or_away = get_data[data+3]
         team_player2 = get_data[data+4]
         win_or_loss = get_data[data+5]
@@ -140,16 +140,39 @@ for url in url_list:
         free_throw_perc = get_data[data+19]
         points = get_data[data+20]
 
-        new_row = row(player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor,
+        new_row = row(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor,
                       field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points)
 
         get_ranks.pop(0)
         data_panda.append(new_row.panda_dict)
-        sql = "INSERT INTO lineups(player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points,url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')".format(
-            player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url)
+        sql_teams = "INSERT INTO teams(players, game_date, winning_team) VALUES ('{}', {}, '{}')".format(
+            [player1_lineup, player2_lineup] game_date, win_or_loss)
         #print(sql)
+        sql_player_1 = "INSERT INTO players(player_name, lineup_rank, team_name) VALUES ('{}', {}, '{}')".format(
+            player1_lineup, lineup_rank, team_name)
+        sql_player_2 = "INSERT INTO players(player_name, lineup_rank, team_name) VALUES ('{}', {}, '{}')".format(
+            player2_lineup, lineup_rank, team_name)
 
-        # player_rank, player1_lineup, player2_lineup, game_date, team_player1, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points
+        sql_games = "INSERT INTO games(home_team, away_team,game_date, win_or_loss) VALUES ('{}', '{}', {}, '{}')".format(
+            home_team, away_team, game_date, win_or_loss)
+
+        sql_lineups = "INSERT INTO lineups(lineup_rank, player1, player2, game_number, minutes_played, pace_factor, points, url) VALUES ({}, '{}', '{}', {}, {}, {}, {}, '{}')".format(
+            lineup_rank, player1_lineup, player2_lineup, game_number, minutes_played, pace_factor, points, url)
+
+        sql_field_goals = "INSERT INTO field_goals(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points,url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')".format(
+            lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url)
+
+        sql_possessions = "INSERT INTO possessions(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points,url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')".format(
+            lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url)
+
+        sql_three_pt_fgs = "INSERT INTO three_pt_fgs(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points,url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')".format(
+            lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url)
+
+        sql_free_throws = "INSERT INTO free_throws(lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points,url) VALUES ({}, '{}', '{}', '{}', '{}', '{}', '{}', '{}', {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, '{}')".format(
+            lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points, url)
+
+
+        # lineup_rank, player1_lineup, player2_lineup, game_date, team_name, home_or_away, team_player2, win_or_loss, minutes_played, possessions_team1, possessions_team2, pace_factor, field_goals, field_goal_attempts, field_goal_perc, three_pt_fgs, three_pt_fg_attempts, three_pt_fg_perc, effective_fg_perc, free_throws, free_throw_attempts, free_throw_perc, points
 
         data_panda.fillna(value = -1776, inplace = True)
 
