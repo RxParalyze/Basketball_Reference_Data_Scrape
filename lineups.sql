@@ -74,8 +74,3 @@ CREATE TABLE "free_throws" (
   free_throw_perc DECIMAL  DEFAULT NULL,
   FOREIGN KEY (lineup_rank) REFERENCES lineups(lineup_rank)
 ) ;
-
-
-
-
-

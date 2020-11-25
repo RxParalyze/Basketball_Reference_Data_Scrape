@@ -6,19 +6,27 @@ import pandas as pd
 from psycopg2 import Error
 from bs4 import BeautifulSoup
 
+session = requests.Session()
+
+payload = {
+    'username': '<USERNAME>',
+    'password': '<PASSWORD>'
+}
+
+
 # SQL connection data to connect and save data in
 db = postgres.connect(
     host = "localhost",
-    username = "postgres",
+    user = "postgres",
     password = "password",
-    database = "lineup_db",
+    database = "postgres",
     port = 5432
 )
 
 game_location = "@"
 
 # URL to be scraped
-url_base = 'https://www.basketball-reference.com/play-index/lineup_finder.cgi?request=1&match=game&lineup_type=2-man&output=total&is_playoffs=N&year_id='
+url_base = 'https://stathead.com/basketball/lineup_finder.cgi?request=1&match=game&lineup_type=2-man&output=total&is_playoffs=N&year_id='
 url_year_start = 2017
 # CHANGE THIS TO 2018 WHEN FINISHED DEBUGGING
 url_year_end = 2017
@@ -37,7 +45,7 @@ for url_year in range(url_year_start, url_year_end + 1):
         url_offset = offset * 100
         url_final = url_base + str(url_year) + url_middle + str(url_offset)
         url_list.append(url_final)
-        print(url_final)
+        #print(url_final)
 
 
 class row:
@@ -77,20 +85,24 @@ sql_rollback = "SELECT LAST_INSERT_ID()"
 
 
 def has_csk(tag):
-    return tag.has_attr("csk") and tag.name == "th"
+    return tag.name == "th" and tag.has_attr("csk")
 def is_data(tag):
-    return tag.has_attr("data-stat") and tag.name == "td"
+    return tag.name == "td" and tag.has_attr("data-stat")
 
 for url in url_list:
     # Load html's plain data into a var
-    plain_html_text = requests.get(url)
+    plain_html_text = session.post("https://stathead.com/users/login.cgi", data = payload)
+    print(url)
+    plain_html_text = session.get(url, headers = dict(referer = url))
+    print(plain_html_text.ok)
     # parse the data
     soup = BeautifulSoup(plain_html_text.text, "html5lib")
-    # print(soup.prettify)
+    print(soup.prettify)
     row_list = []
 
     # Find the table
     get_ranks = soup.find_all(has_csk)
+    print(len(get_ranks))
     get_data = soup.find_all(is_data)
 
     for y in range(0, len(get_ranks)):
@@ -99,22 +111,24 @@ for url in url_list:
         get_data[y] = get_data[y].text.strip()
 
     for y in range(0, len(get_ranks)):
-        print(get_ranks[y])
+        #print(get_ranks[y])
+        continue
     for y in range(0, len(get_data)):
-        print(get_data[y])
+        #print(get_data[y])
         if(get_data[y].__contains__("+")):
             get_data[y] = str(get_data[y]).replace("+","")
 
     data_panda = pd.DataFrame(get_data)
-    data_row_count = 21
+    data_row_count = 22
 
     # find the "td" tags
     for counter in range(0, len(get_ranks)):
         data = counter * data_row_count
         lineup_rank = get_ranks[0]
-
         player_lineup = get_data[data].split("|")
+        print(player_lineup)
         player1_lineup = player_lineup[0]
+        print(player1_lineup)
         player2_lineup = player_lineup[1]
         game_date = get_data[data+1]
         team_name = get_data[data+2]
@@ -183,6 +197,7 @@ for url in url_list:
         data_panda.fillna(value = 0, inplace = True)
         cursor = db.cursor()
         try:
+            print("starting execute")
             cursor.execute(sql_teams)
             cursor.execute(sql_player_1)
             cursor.execute(sql_player_2)
@@ -204,6 +219,16 @@ for url in url_list:
 
         sql_lineups = "INSERT INTO lineups(lineup_rank, player1, player2, game_number, minutes_played, pace_factor, points, url) VALUES ({}, '{}', '{}', {}, {}, {}, {}, '{}')".format(
             lineup_rank, player1_lineup, player2_lineup, game_number, minutes_played, pace_factor, points, url)
+
+        try:
+            print("starting execute")
+            cursor.execute(sql_lineups)
+            # Commit your changes in the database
+            db.commit()
+            print("committed")
+        except postgres.connector.Error as error:
+            print("something messed up. Here's what went wrong: {}".format(error))
+            cursor.execute(sql_rollback)
 
         try:
             result = cursor.fetchone()
