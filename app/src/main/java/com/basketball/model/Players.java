@@ -1,4 +1,4 @@
-package com.basketball.lineups;
+package com.basketball.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;

@@ -217,7 +217,12 @@
                 <groupId>org.threeten</groupId>
                 <artifactId>threetenbp</artifactId>
                 <version>${threetenbp-version}</version>
-            </dependency>
+        </dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-api</artifactId>
+            <version>8.0.1</version>
+        </dependency>
         <!-- test dependencies -->
         <dependency>
             <groupId>junit</groupId>

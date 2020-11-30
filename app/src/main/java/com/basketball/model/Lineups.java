@@ -1,4 +1,4 @@
-package com.basketball.lineups;
+package com.basketball.model;
 
 import java.sql.Date;
 
