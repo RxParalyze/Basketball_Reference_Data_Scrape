@@ -5,7 +5,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name="players")
-public class Players {
+public class Player {
     private String player_name;
     private int[] player_lineups;
     private String team_name;

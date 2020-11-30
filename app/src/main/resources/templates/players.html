@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Players</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+
+    <body>
+        <h2>List of Players</h2>
+
+        <table>
+            <tr>
+                <th>Player Name</th>
+                <th>Lineups</th>
+                <th>Team Name</th>
+            </tr>
+
+            <tr th:each="Player : ${Players}">
+                <td th:text="${Player.player_name}">Player Name</td>
+                <td th:text="${Player.player_lineups}">Lineups</td>
+                <td th:text="${Player.team_name}">Team name</td>
+            </tr>
+        </table>
+
+    </body>
+</html>

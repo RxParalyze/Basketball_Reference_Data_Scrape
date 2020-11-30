@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Lineups</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    </head>
+    
+    <body>
+        <h2>List of Lineups</h2>
+
+        <table>
+            <tr>
+                <th>Lineup Rank</th>
+                <th>Player 1</th>
+                <th>Player 2</th>
+                <th>Game Number</th>
+                <th>Pace Factor</th>
+                <th>Pull Time</th>
+                <th>URL</th>
+            </tr>
+            <tr th:each="lineup : ${lineups}">
+                <td th:text="${lineup.lineup_rank}">Lineup Rank</td>
+                <td th:text="${lineup.player1}">Player1</td>
+                <td th:text="${lineup.player2}">Player2</td>
+                <td th:text="${lineup.game_number}">Game Number</td>
+                <td th:text="${lineup.pace_factor}">Pace Factor</td>
+                <td th:text="${lineup.pull_time}">Pull Time</td>
+                <td th:text="${lineup.url}">URL</td>
+            </tr>
+        </table>
+
+    </body>
+</html>

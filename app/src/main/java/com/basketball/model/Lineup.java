@@ -7,7 +7,7 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "lineups")
-public class Lineups {
+public class Lineup {
     private int lineup_rank;
     private String player1;
     private String player2;

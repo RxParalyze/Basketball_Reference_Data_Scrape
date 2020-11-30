@@ -1,5 +1,10 @@
-com/basketball/lineups/App.class
-com/basketball/lineups/PlayersController.class
-com/basketball/lineups/Lineups.class
-com/basketball/lineups/LineupsController.class
-com/basketball/lineups/Players.class
+com/basketball/service/EntityService.class
+com/basketball/service/PlayerService.class
+com/basketball/repository/PlayerRepo.class
+com/basketball/App.class
+com/basketball/controller/LineupController.class
+com/basketball/controller/PlayerController.class
+com/basketball/repository/LineupRepo.class
+com/basketball/service/LineupService.class
+com/basketball/model/Player.class
+com/basketball/model/Lineup.class
