@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class PlayersController {
-    private List<Players> entityList = new ArrayList<>();
+    private List<Players> playerList = new ArrayList<>();
 
-    @RequestMapping("/entity/all")
+    @RequestMapping("/player/all")
     public List<Players> findAll() {
-        return entityList;
+        return playerList;
     }
  
-    @RequestMapping(value = "/entity", method = RequestMethod.POST)
-    public Players addEntity(Players entity) {
-        entityList.add(entity);
-        return entity;
+    @RequestMapping(value = "/player", method = RequestMethod.POST)
+    public Players addplayer(Players player) {
+        playerList.add(player);
+        return player;
     }
  
-    @RequestMapping("/entity/findby/{id}")
+    @RequestMapping("/player/findby/{id}")
     public Players findById(@PathVariable String id) {
-        return entityList.stream().
-                 filter(entity -> entity.getPlayer_name() == id).
+        return playerList.stream().
+                 filter(player -> player.getPlayer_name() == id).
                    findFirst().get();
     }
 }

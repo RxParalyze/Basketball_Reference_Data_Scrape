@@ -10,23 +10,23 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class LineupsController {
-    private List<Lineups> entityList = new ArrayList<>();
- 
-    @RequestMapping("/entity/all")
+    private List<Lineups> lineupList = new ArrayList<>();
+
+    @RequestMapping("/lineup/all")
     public List<Lineups> findAll() {
-        return entityList;
+        return lineupList;
     }
- 
-    @RequestMapping(value = "/entity", method = RequestMethod.POST)
-    public Lineups addEntity(Lineups entity) {
-        entityList.add(entity);
-        return entity;
+
+    @RequestMapping(value = "/lineup", method = RequestMethod.POST)
+    public Lineups addlineup(Lineups lineup) {
+        lineupList.add(lineup);
+        return lineup;
     }
- 
-    @RequestMapping("/entity/findby/{id}")
+
+    @RequestMapping("/lineup/findby/{id}")
     public Lineups findById(@PathVariable int id) {
-        return entityList.stream().
-                 filter(entity -> entity.getLineup_rank() == id).
+        return lineupList.stream().
+                 filter(lineup -> lineup.getLineup_rank() == id).
                    findFirst().get();
     }
 }
