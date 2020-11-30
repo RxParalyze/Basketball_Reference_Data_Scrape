@@ -1,23 +1,24 @@
+SET search_path TO "lineup_schema";
 DROP SCHEMA IF EXISTS "lineup_schema" CASCADE;
 CREATE SCHEMA "lineup_schema";
-SET search_path TO "lineup_schema";
 
-CREATE TABLE "teams" (
+
+CREATE TABLE teams (
   team_name VARCHAR(255)  NOT NULL,
-  game_numbers INT ARRAY,
-  players VARCHAR ARRAY,
+  game_numbers INT[],
+  players VARCHAR[],
   PRIMARY KEY (team_name)
 ) ;
 
-CREATE TABLE "players" (
+CREATE TABLE players (
   player_name VARCHAR(255)  NOT NULL,
-  player_lineups INTEGER ARRAY  NOT NULL,
+  player_lineups INT[]  NOT NULL,
   team_name VARCHAR(255)  DEFAULT NULL,
   PRIMARY KEY (player_name),
   FOREIGN KEY (team_name) REFERENCES teams(team_name)
 ) ;
 
-CREATE TABLE "games" (
+CREATE TABLE games (
   game_number SERIAL,
   home_team VARCHAR(255)  NOT NULL,
   away_team VARCHAR(255)  NOT NULL,
@@ -28,7 +29,7 @@ CREATE TABLE "games" (
   FOREIGN KEY (away_team) REFERENCES teams(team_name)
 );
 
-CREATE TABLE "lineups" (
+CREATE TABLE lineups (
   lineup_rank INT  NOT NULL,
   player1 VARCHAR(255)  NOT NULL,
   player2 VARCHAR(255)  DEFAULT NULL,
@@ -43,7 +44,7 @@ CREATE TABLE "lineups" (
   FOREIGN KEY (game_number) REFERENCES games(game_number)
 ) ;
 
-CREATE TABLE "field_goals" (
+CREATE TABLE field_goals (
   lineup_rank INT  NOT NULL,
   field_goals INT  NOT NULL,
   field_goal_attempts INT  NOT NULL,
@@ -51,14 +52,14 @@ CREATE TABLE "field_goals" (
   FOREIGN KEY (lineup_rank) REFERENCES lineups(lineup_rank)
 ) ;
 
-CREATE TABLE "possessions" (
+CREATE TABLE possessions (
   lineup_rank INT  NOT NULL,
   possessions_team1 INT  NOT NULL,
   possessions_team2 INT  NOT NULL,
   FOREIGN KEY (lineup_rank) REFERENCES lineups(lineup_rank)
 ) ;
 
-CREATE TABLE "three_pt_fgs" (
+CREATE TABLE three_pt_fgs (
   lineup_rank INT  NOT NULL,
   three_pt_fgs INT  NOT NULL,
   three_pt_fg_attempts INT  NOT NULL,
@@ -67,7 +68,7 @@ CREATE TABLE "three_pt_fgs" (
   FOREIGN KEY (lineup_rank) REFERENCES lineups(lineup_rank)
 ) ;
 
-CREATE TABLE "free_throws" (
+CREATE TABLE free_throws (
   lineup_rank INT  NOT NULL,
   free_throws INT  NOT NULL,
   free_throw_attempts INT  NOT NULL,
