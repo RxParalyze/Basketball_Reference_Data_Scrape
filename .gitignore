@@ -2,3 +2,4 @@ pgadmin*
 *.jar
 *.war
 /app/target/*
+*.class
